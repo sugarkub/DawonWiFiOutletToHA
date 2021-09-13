@@ -70,3 +70,11 @@ sudo python3 dawon_to_ha.py {mac_address} {model_name}[optional]
 ```bash
 python3 power_off.py {mac_address} {device_name}
 ```
+
+## 동작 확인
+
+이 스크립트 및 아래 플러그 등록 코드를 사용하여 동작을 확인한 제품 리스트는 다음과 같습니다.
+
+- PM-B530-W
+- PM-B540-W
+- PM-M130-WE
