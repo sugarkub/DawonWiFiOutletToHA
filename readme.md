@@ -46,7 +46,7 @@ HA의 설정 파일 경로가 /data/homeassistant 라고 가정했을때 다음�
 - /data/homeassistant/switch
 - /data/homeassistant/sensor
 - /data/homeassistant/automation
-- /data/homeassistant/utility-meter
+- /data/homeassistant/utility_meter
 
 HA의 설정파일인 configuration.yaml 파일을 플러그를 추가/삭제할때마다 수정하는게 좀 번거로울 수 있으므로, 각 플러그별 설정 파일을 별도로 생성하여 사용할 수 있도록 configuration.yaml 파일을 다음과 같이 수정합니다. 해당 항목이 없으면 새로 추가합니다.
 
