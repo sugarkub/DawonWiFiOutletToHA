@@ -62,7 +62,7 @@ utility_meter: !include_dir_merge_named utility_meter/
 ### 스위치, 전력 측정 센서, 전력 측정 자동화, 유틸리티 센서 등록
 
 ```bash
-sudo python3 dawon_to_ha.py {mac_address} {model_name}[optional]
+python3 dawon_to_ha.py {mac_address} {model_name}[optional]
 ```
 
 ### 자동 전원 끄기 자동화 등록
