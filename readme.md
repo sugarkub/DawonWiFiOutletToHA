@@ -53,22 +53,25 @@ HA의 설정파일인 configuration.yaml 파일을 플러그를 추가/삭제할
 ```yaml
 # HA configuration.yaml
 
+homeassistant:
+  customize: !include customize.yaml
+
 automation: !include_dir_list automation/
 switch: !include_dir_list switch/
 sensor: !include_dir_list sensor/
 utility_meter: !include_dir_merge_named utility_meter/
 ```
 
-### 스위치, 전력 측정 센서, 전력 측정 자동화, 유틸리티 센서 등록
+### 스위치, 내부온도 센서, 전력 측정 센서, 센저 정보 갱신 자동화, 유틸리티 센서 등록
 
 ```bash
-python3 dawon_to_ha.py {mac_address} {model_name}[optional]
+python3 dawon_to_ha.py {mac_address} {friendly_name} {model_name}[optional]
 ```
 
 ### 자동 전원 끄기 자동화 등록
 
 ```bash
-python3 power_off.py {mac_address} {device_name}
+python3 power_off.py {mac_address} {friendly_name}
 ```
 
 ## 동작 확인
@@ -78,3 +81,8 @@ python3 power_off.py {mac_address} {device_name}
 - PM-B530-W
 - PM-B540-W
 - PM-M130-WE
+
+## 특이사항
+
+- 사용법은 samples.sh 파일을 참고하면 됩니다.
+- 멀티탭의 경우에는 내부 온도 값이 올라오지 않고 있습니다.
