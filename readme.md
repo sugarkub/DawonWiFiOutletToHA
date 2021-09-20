@@ -62,7 +62,7 @@ sensor: !include_dir_list sensor/
 utility_meter: !include_dir_merge_named utility_meter/
 ```
 
-### 스위치, 내부온도 센서, 전력 측정 센서, 센저 정보 갱신 자동화, 유틸리티 센서 등록
+### 스위치, 내부온도 센서, 전력 측정 센서, 센서 정보 갱신 자동화, 유틸리티 센서 등록
 
 ```bash
 python3 dawon_to_ha.py {mac_address} {friendly_name} {model_name}[optional]
