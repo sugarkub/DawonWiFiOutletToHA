@@ -3,27 +3,29 @@ import sys
 ha_path = "/data/homeassistant"
 
 def add_power_off(mac, name):
-    yaml = open(ha_path + "/automation/power_off_" + mac + ".yaml", 'w')
     plug_name = mac + "_plug"
     sensor_name = mac + "_energy"
 
-    print("# " + name, file=yaml)
-    print("alias: power_off_" + mac, file=yaml)
-    print("description: 'Power off for " + name + "'", file=yaml)
-    print("trigger:", file=yaml)
-    print("  - below: '15'", file=yaml)
-    print("    entity_id: sensor." + sensor_name, file=yaml)
-    print("    for: 00:10:00", file=yaml)
-    print("    platform: numeric_state", file=yaml)
-    print("condition:", file=yaml)
-    print("  - condition: state", file=yaml)
-    print("    entity_id: switch." + plug_name, file=yaml)
-    print("    state: 'on'", file=yaml)
-    print("action:", file=yaml)
-    print("  - data: {}", file=yaml)
-    print("    entity_id: switch." + plug_name, file=yaml)
-    print("    service: switch.turn_off", file=yaml)
+    lines = []
+    lines.append("# " + name)
+    lines.append("alias: power_off_" + mac)
+    lines.append("description: 'Power off for " + name + "'")
+    lines.append("trigger:")
+    lines.append("  - below: '15'")
+    lines.append("    entity_id: sensor." + sensor_name)
+    lines.append("    for: 00:10:00")
+    lines.append("    platform: numeric_state")
+    lines.append("condition:")
+    lines.append("  - condition: state")
+    lines.append("    entity_id: switch." + plug_name)
+    lines.append("    state: 'on'")
+    lines.append("action:")
+    lines.append("  - data: {}")
+    lines.append("    entity_id: switch." + plug_name)
+    lines.append("    service: switch.turn_off")
 
+    yaml = open(ha_path + "/automation/power_off_" + mac + ".yaml", 'w')
+    yaml.writelines('\n'.join(lines))
     yaml.close()
 
 if __name__ == "__main__":

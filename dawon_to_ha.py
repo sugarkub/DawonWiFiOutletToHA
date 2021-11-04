@@ -11,84 +11,87 @@ def add_plug(mac, name, model):
     did = model + "-" + mac
     plug_name = mac + "_plug"
 
+    lines = []
+    lines.append("platform: mqtt")
+    lines.append("unique_id: \"" + plug_name + "\"")
+    lines.append("name: \"" + plug_name + "\"")
+    lines.append("command_topic: \"dwd.v1/iot-server/DAWONDNS-" + did + "/execute/json\"")
+    lines.append("state_topic: \"dwd.v1/DAWONDNS-" + did + "/iot-server/notify/json\"")
+    lines.append("payload_on: '" + payload_on + "'")
+    lines.append("payload_off: '" + payload_off + "'")
+    lines.append("state_on: 'on'")
+    lines.append("state_off: 'off'")
+    lines.append("value_template: >-")
+    lines.append("  {% if value_json.sid == '2' %}")
+    lines.append("    {% if value_json.msg.e[0].sv == 'true' %}")
+    lines.append("      on")
+    lines.append("    {% else %}")
+    lines.append("      off")
+    lines.append("    {% endif %}")
+    lines.append("  {% else %}")
+    lines.append("  {% endif %}")
+
     yaml = open(ha_path + "/switch/" + plug_name + ".yaml", 'w')
-
-    print("platform: mqtt", file=yaml)
-    print("unique_id: \"" + plug_name + "\"", file=yaml)
-    print("name: \"" + plug_name + "\"", file=yaml)
-    print("command_topic: \"dwd.v1/iot-server/DAWONDNS-" + did + "/execute/json\"", file=yaml)
-    print("state_topic: \"dwd.v1/DAWONDNS-" + did + "/iot-server/notify/json\"", file=yaml)
-    print("payload_on: '" + payload_on + "'", file=yaml)
-    print("payload_off: '" + payload_off + "'", file=yaml)
-    print("state_on: 'on'", file=yaml)
-    print("state_off: 'off'", file=yaml)
-    print("value_template: >-", file=yaml)
-    print("  {% if value_json.sid == '2' %}", file=yaml)
-    print("    {% if value_json.msg.e[0].sv == 'true' %}", file=yaml)
-    print("      on", file=yaml)
-    print("    {% else %}", file=yaml)
-    print("      off", file=yaml)
-    print("    {% endif %}", file=yaml)
-    print("  {% else %}", file=yaml)
-    print("  {% endif %}", file=yaml)
-
+    yaml.writelines('\n'.join(lines))
     yaml.close()
 
 def add_energy_sensor(mac, name, model):
     did = model + "-" + mac
     sensor_name = mac + "_energy"
-    yaml = open(ha_path + "/sensor/" + sensor_name + ".yaml", 'w')
 
-    print("platform: mqtt", file=yaml)
-    print("unique_id: \"" + sensor_name + "\"", file=yaml)
-    print("name: \"" + sensor_name + "\"", file=yaml)
-    print("unit_of_measurement: \"W\"", file=yaml)
-    print("state_topic: \"dwd.v1/DAWONDNS-" + did + "/iot-server/notify/json\"", file=yaml)
-    print("value_template: >-", file=yaml)
-    print("  {% if value_json.sid == '2' %}", file=yaml)
-    print("    {{ value_json.msg.e[1].sv | float | round(2) }}", file=yaml)
-    print("  {% elif value_json.sid == '1' %}", file=yaml)
-    print("    {{ value_json.msg.e[3].sv | float | round(2) }}", file=yaml)
-    print("  {% else %}", file=yaml)
-    print("    {{ states('sensor." + sensor_name + "') }}", file=yaml)
-    print("  {% endif %}", file=yaml)
+    lines = []
+    lines.append("platform: mqtt")
+    lines.append("unique_id: \"" + sensor_name + "\"")
+    lines.append("name: \"" + sensor_name + "\"")
+    lines.append("unit_of_measurement: \"W\"")
+    lines.append("state_topic: \"dwd.v1/DAWONDNS-" + did + "/iot-server/notify/json\"")
+    lines.append("value_template: >-")
+    lines.append("  {% set measured = (value_json.msg.e[1].sv | float | round(2)) if value_json.sid == '2' else ((value_json.msg.e[3].sv | float | round(2)) if value_json.sid == '1' else states('sensor." + sensor_name + "')) %}")
+    lines.append("  {% if measured < 3520 %}")
+    lines.append("    {{ measured }}")
+    lines.append("  {% else %}")
+    lines.append("    {{ states('sensor." + sensor_name + "') }}")
+    lines.append("  {% endif %}")
+
+    yaml = open(ha_path + "/sensor/" + sensor_name + ".yaml", 'w')
+    yaml.writelines('\n'.join(lines))
+    yaml.close()
 
 def add_temperature_sensor(mac, name, model):
     did = model + "-" + mac
     sensor_name = mac + "_temperature"
-    yaml = open(ha_path + "/sensor/" + sensor_name + ".yaml", 'w')
 
-    print("platform: mqtt", file=yaml)
-    print("unique_id: \"" + sensor_name + "\"", file=yaml)
-    print("name: \"" + sensor_name + "\"", file=yaml)
-    print("unit_of_measurement: \"℃\"", file=yaml)
-    print("state_topic: \"dwd.v1/DAWONDNS-" + did + "/iot-server/notify/json\"", file=yaml)
-    print("value_template: >-", file=yaml)
-    print("  {% set temp = (value_json.msg.e[2].sv | float | round(2)) if value_json.sid == '2' else ((value_json.msg.e[8].sv | float | round(2)) if value_json.sid == '1' else states('sensor." + sensor_name + "')) %}", file=yaml)
-    print("  {% if temp > 1 %}", file=yaml)
-    print("    {{ temp }}", file=yaml)
-    print("  {% else %}", file=yaml)
-    print("    {{ states('sensor." + sensor_name + "') }}", file=yaml)
-    print("  {% endif %}", file=yaml)
-    #print("  {% if value_json.sid == '2' %}", file=yaml)
-    #print("    {{ value_json.msg.e[2].sv | float | round(2) }}", file=yaml)
-    #print("  {% elif value_json.sid == '1' %}", file=yaml)
-    #print("    {{ value_json.msg.e[8].sv | float | round(2) }}", file=yaml)
-    #print("  {% else %}", file=yaml)
-    #print("    {{ states('sensor." + sensor_name + "') }}", file=yaml)
-    #print("  {% endif %}", file=yaml)
+    lines = []
+    lines.append("platform: mqtt")
+    lines.append("unique_id: \"" + sensor_name + "\"")
+    lines.append("name: \"" + sensor_name + "\"")
+    lines.append("unit_of_measurement: \"℃\"")
+    lines.append("state_topic: \"dwd.v1/DAWONDNS-" + did + "/iot-server/notify/json\"")
+    lines.append("value_template: >-")
+    lines.append("  {% set temp = (value_json.msg.e[2].sv | float | round(2)) if value_json.sid == '2' else ((value_json.msg.e[8].sv | float | round(2)) if value_json.sid == '1' else states('sensor." + sensor_name + "')) %}")
+    lines.append("  {% if temp > 1 %}")
+    lines.append("    {{ temp }}")
+    lines.append("  {% else %}")
+    lines.append("    {{ states('sensor." + sensor_name + "') }}")
+    lines.append("  {% endif %}")
+
+    yaml = open(ha_path + "/sensor/" + sensor_name + ".yaml", 'w')
+    yaml.writelines('\n'.join(lines))
+    yaml.close()
 
 def add_energy_integration(mac, name, model):
     sensor_name = mac + "_energy"
     integration_name = mac + "_integration"
 
-    yaml = open(ha_path + "/sensor/" + integration_name + ".yaml", 'w')
-    print("platform: integration", file=yaml)
-    print("name: \"" + integration_name + "\"", file=yaml)
-    print("source: sensor." + sensor_name, file=yaml)
-    print("unit_prefix: k", file=yaml)
-    print("round: 2", file=yaml)
+    lines = []
+    lines.append("platform: integration")
+    lines.append("name: \"" + integration_name + "\"")
+    lines.append("source: sensor." + sensor_name)
+    lines.append("unit_prefix: k")
+    lines.append("round: 2")
 
+    yaml = open(ha_path + "/sensor/" + integration_name + ".yaml", 'w')
+    yaml.writelines('\n'.join(lines))
     yaml.close()
 
 def add_utility_meter(mac, name, model):
@@ -96,16 +99,17 @@ def add_utility_meter(mac, name, model):
     daily = mac + "_integration_daily"
     monthly = mac + "_integration_monthly"
 
+    lines = []
+    lines.append(daily + ":")
+    lines.append("  source: sensor." + integration)
+    lines.append("  cycle: daily")
+
+    lines.append(monthly + ":")
+    lines.append("  source: sensor." + integration)
+    lines.append("  cycle: monthly")
+
     yaml = open(ha_path + "/utility_meter/" + integration + ".yaml", 'w')
-
-    print(daily + ":", file=yaml)
-    print("  source: sensor." + integration, file=yaml)
-    print("  cycle: daily", file=yaml)
-
-    print(monthly + ":", file=yaml)
-    print("  source: sensor." + integration, file=yaml)
-    print("  cycle: monthly", file=yaml)
-
+    yaml.writelines('\n'.join(lines))
     yaml.close()
 
 def add_refresh(mac, name, model):
@@ -115,25 +119,30 @@ def add_refresh(mac, name, model):
 
     path = ha_path + "/automation/dawon_plug_info_refresh.yaml"
 
+    lines = []
+
     if os.path.isfile(path):
         yaml = open(path, 'a')
-        print("  - service: mqtt.publish", file=yaml)
-        print("    data_template:", file=yaml)
-        print("      topic: \"dwd.v1/iot-server/DAWONDNS-" + did + "/read/json\"", file=yaml)
-        print("      payload: '" + payload + "'", file=yaml)
+        lines.append("  - service: mqtt.publish")
+        lines.append("    data_template:")
+        lines.append("      topic: \"dwd.v1/iot-server/DAWONDNS-" + did + "/read/json\"")
+        lines.append("      payload: '" + payload + "'")
+        lines.append("")
 
     else:
         yaml = open(path, 'w')
-        print("alias: 'dawon_plug_info_refresh'", file=yaml)
-        print("trigger:", file=yaml)
-        print("  platform: time_pattern", file=yaml)
-        print("  seconds: '/30'", file=yaml)
-        print("action:", file=yaml)
-        print("  - service: mqtt.publish", file=yaml)
-        print("    data_template:", file=yaml)
-        print("      topic: \"dwd.v1/iot-server/DAWONDNS-" + did + "/read/json\"", file=yaml)
-        print("      payload: '" + payload + "'", file=yaml)
+        lines.append("alias: 'dawon_plug_info_refresh'")
+        lines.append("trigger:")
+        lines.append("  platform: time_pattern")
+        lines.append("  seconds: '/30'")
+        lines.append("action:")
+        lines.append("  - service: mqtt.publish")
+        lines.append("    data_template:")
+        lines.append("      topic: \"dwd.v1/iot-server/DAWONDNS-" + did + "/read/json\"")
+        lines.append("      payload: '" + payload + "'")
+        lines.append("")
 
+    yaml.writelines('\n'.join(lines))
     yaml.close()
 
 def add_customize(mac, name):
@@ -146,22 +155,30 @@ def add_customize(mac, name):
     else:
         mode = 'w'
 
-    yaml = open(path, mode)
-    print("# " + name, file=yaml)
-    print("switch." + mac + "_plug:", file=yaml)
-    print("  friendly_name: " + name, file=yaml)
-    print("sensor." + mac + "_temperature:", file=yaml)
-    print("  friendly_name: " + name + " 내부온도", file=yaml)
-    print("sensor." + mac + "_energy:", file=yaml)
-    print("  friendly_name: " + name + " 소모전력", file=yaml)
-    print("sensor." + mac + "_integration:", file=yaml)
-    print("  friendly_name: " + name + " 누적 소모전력", file=yaml)
-    print("sensor." + mac + "_integration_daily:", file=yaml)
-    print("  friendly_name: " + name + " 일간 소모전력", file=yaml)
-    print("sensor." + mac + "_integration_monthly:", file=yaml)
-    print("  friendly_name: " + name + " 월간 소모전력", file=yaml)
-    print("", file=yaml)
+    lines = []
+    lines.append("# " + name)
+    lines.append("switch." + mac + "_plug:")
+    lines.append("  friendly_name: " + name)
+    lines.append("  icon: hass:power")
+    lines.append("sensor." + mac + "_temperature:")
+    lines.append("  friendly_name: " + name + " 내부온도")
+    lines.append("  icon: hass:thermometer")
+    lines.append("sensor." + mac + "_energy:")
+    lines.append("  friendly_name: " + name + " 소모전력")
+    lines.append("  icon: hass:speedometer")
+    lines.append("sensor." + mac + "_integration:")
+    lines.append("  friendly_name: " + name + " 누적 소모전력")
+    lines.append("sensor." + mac + "_integration_daily:")
+    lines.append("  friendly_name: " + name + " 일간 소모전력")
+    lines.append("  icon: hass:calendar-today")
+    lines.append("sensor." + mac + "_integration_monthly:")
+    lines.append("  friendly_name: " + name + " 월간 소모전력")
+    lines.append("  icon: hass:calendar-month")
+    lines.append("")
 
+    yaml = open(path, mode)
+    yaml.writelines('\n'.join(lines))
+    yaml.close()
 
 if __name__ == "__main__":
     argc = len(sys.argv)
