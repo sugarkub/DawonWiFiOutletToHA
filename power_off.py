@@ -8,7 +8,8 @@ def add_power_off(mac, name):
 
     lines = []
     lines.append("# " + name)
-    lines.append("alias: power_off_" + mac)
+    lines.append("id: automation.power_off_" + mac)
+    lines.append("alias: '" + name + " 전원차단'")
     lines.append("description: 'Power off for " + name + "'")
     lines.append("trigger:")
     lines.append("  - below: '15'")
